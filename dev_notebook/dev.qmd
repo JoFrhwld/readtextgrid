@@ -1,0 +1,31 @@
+---
+title: "Dev"
+format: html
+editor: visual
+---
+
+```{r}
+source("../R/readtextgrid.R")
+```
+
+```{r}
+tg_path = "../inst/speaker-data/speaker001/s2T01.TextGrid"
+```
+
+```{r}
+readr::read_lines(tg_path) |> 
+  slice_sections("item") -> items
+```
+
+```{r}
+items
+```
+
+```{r}
+items[[1]] |> 
+  slice_sections("intervals") |> 
+   purrr::map(get_field_list, fields = c("xmin", "xmax", "text")) |>
+   purrr::imap(add_annotation_num) |> 
+   purrr::map(tibble::as_tibble) |> 
+   purrr::list_rbind()
+```

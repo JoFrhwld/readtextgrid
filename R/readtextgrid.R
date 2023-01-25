@@ -60,7 +60,7 @@ parse_textgrid_lines <- function(lines) {
   lines |>
     slice_sections("item") |>
     purrr::map(parse_item_lines) |>
-    plyr::ldply(as.data.frame, stringsAsFactors = FALSE)
+    purrr::list_rbind()
 }
 
 slice_sections <- function(lines, section_head) {
@@ -108,7 +108,8 @@ parse_interval_tier <- function(lines_interval_tier) {
     slice_sections("intervals") |>
     purrr::map(get_field_list, fields = c("xmin", "xmax", "text")) |>
     purrr::imap(add_annotation_num) |>
-    plyr::ldply(as.data.frame, stringsAsFactors = FALSE)
+    purrr::map(tibble::as_tibble) |>
+    purrr::list_rbind()
 }
 
 parse_point_tier <- function(lines_point_tier) {
@@ -119,7 +120,8 @@ parse_point_tier <- function(lines_point_tier) {
       slice_sections("points") |>
       purrr::map(get_field_list, fields = c("number", "mark")) |>
       purrr::imap(add_annotation_num) |>
-      plyr::ldply(as.data.frame, stringsAsFactors = FALSE)
+      purrr::map(tibble::as_tibble) |>
+      purrr::list_rbind()
 
     # We treat points as zero-width intervals
     df[["xmin"]] <- df[["number"]]
